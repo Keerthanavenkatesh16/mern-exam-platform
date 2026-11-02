@@ -1,5 +1,15 @@
 # Secure Digital Assessment Platform (MERN Stack)
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://mern-exam-platform-1.onrender.com)
+[![GitHub](https://img.shields.io/badge/Source%20Code-GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Keerthanavenkatesh16/mern-exam-platform)
+
+> 🌐 **Live Application URL**: [https://mern-exam-platform-1.onrender.com](https://mern-exam-platform-1.onrender.com)
+>
+> 🔑 **Demo Login Accounts**:
+> - **Student**: `student@example.com` / `Student@123`
+> - **Faculty**: `faculty@example.com` / `Faculty@123`
+> - **Admin**: `admin@example.com` / `Admin@123`
+
 A full-stack online examination platform built with **MongoDB, Express.js, React.js, and Node.js**, implementing the requirements from the SRS: role-based access (Admin / Faculty / Student), exam creation and scheduling, a question bank with multiple question types, an online exam-taking interface with autosave and a countdown timer, automated evaluation for objective questions, basic academic-integrity/proctoring event logging, performance analytics, and result publication workflow.
 
 ## Project structure
