@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -27,6 +30,9 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
+// Enable trust proxy for cloud PaaS (Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'http://localhost:3000',
@@ -40,6 +46,7 @@ const isAllowedOrigin = (origin) => {
   if (allowedOrigins.includes(origin)) return true;
   if (/^http:\/\/localhost:\d+$/.test(origin)) return true;
   if (/^http:\/\/127\.0\.0\.1:\d+$/.test(origin)) return true;
+  if (/\.onrender\.com$/.test(origin) || /\.vercel\.app$/.test(origin) || /\.netlify\.app$/.test(origin)) return true;
   return false;
 };
 
@@ -65,7 +72,12 @@ io.on('connection', (socket) => {
 });
 
 // Security & core middleware
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 app.use(cors({
   origin: (origin, callback) => {
     if (isAllowedOrigin(origin)) callback(null, true);
@@ -97,6 +109,23 @@ app.use('/api/results', resultRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+// Serve static frontend assets in production (or when frontend build directory exists)
+const frontendBuildPath = path.join(__dirname, '../frontend/build');
+if (process.env.NODE_ENV === 'production' || fs.existsSync(frontendBuildPath)) {
+  app.use(express.static(frontendBuildPath));
+
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    const indexPath = path.join(frontendBuildPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    }
+    next();
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
